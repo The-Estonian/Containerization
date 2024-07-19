@@ -16,7 +16,7 @@ services:
     networks:
       my_custom_network:
         ipv4_address: 192.168.56.103
-    # restart: always
+    restart: on-failure
 
   inventory-db:
     image: postgres:15-alpine
@@ -31,7 +31,7 @@ services:
     networks:
       my_custom_network:
         ipv4_address: 192.168.56.104
-    # restart: always
+    restart: on-failure
 
   billing-app:
     build: ./src/billing
@@ -50,7 +50,7 @@ services:
     networks:
       my_custom_network:
         ipv4_address: 192.168.56.102
-    # restart: always
+    restart: on-failure
 
   billing-db:
     image: postgres:15-alpine
@@ -65,7 +65,7 @@ services:
     networks:
       my_custom_network:
         ipv4_address: 192.168.56.105
-    # restart: always
+    restart: on-failure
 
   rabbit-queue:
     image: rabbitmq:3-management
@@ -76,11 +76,11 @@ services:
       my_custom_network:
         ipv4_address: 192.168.56.106
     healthcheck:
-      test: ["CMD-SHELL", "rabbitmqctl status"]
+      test: ['CMD-SHELL', 'rabbitmqctl status']
       interval: 30s
       timeout: 10s
       retries: 5
-    # restart: always
+    restart: on-failure
 
   api-gateway-app:
     build: ./src/gateway
@@ -98,7 +98,7 @@ services:
     networks:
       my_custom_network:
         ipv4_address: 192.168.56.101
-    # restart: always
+    restart: on-failure
 
 volumes:
   inventory-db-volume:

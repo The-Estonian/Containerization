@@ -2,6 +2,14 @@
 
 ## Project Description
 
+Dockerised the last CRUD-master assignment.
+
+Each microservice received it's own docker container, so did each of the microservice database.
+
+Also added volumes to the database for data persistency.
+
+In total, 6 docker containers, 3 volumes, 1 network was added and conneted to eachother as required per project assignments.
+
 ## Table of Contents
 
 - [How to run](#howtorun)
@@ -32,7 +40,7 @@ To audit the program, follow the steps [here](https://github.com/01-edu/public/t
 
 ## Project Videos
 
-Video: https://youtu.be/bdiaenei95k
+Video: https://youtu.be/MGmq2ekKq_E
 
 ## Contributing
 
