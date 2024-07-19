@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  inventory-app:
+    build: ./src/inventory
+    ports:
+      - '8080:8080'
+    depends_on:
+      - inventory-db
+    environment:
+      - DATABASE_HOST=inventory-db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${INVENTORY_DATABASE_USER}
+      - DATABASE_PASSWORD=${INVENTORY_DATABASE_PASSWORD}
+      - DATABASE_NAME=${INVENTORY_DATABASE_NAME}
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.103
+    # restart: always
+
+  inventory-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${INVENTORY_DATABASE_USER}
+      POSTGRES_PASSWORD: ${INVENTORY_DATABASE_PASSWORD}
+      POSTGRES_DB: ${INVENTORY_DATABASE_NAME}
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - inventory-db-volume:/var/lib/postgresql/data
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.104
+    # restart: always
+
+  billing-app:
+    build: ./src/billing
+    ports:
+      - '8081:8080'
+    depends_on:
+      - billing-db
+      - rabbit-queue
+    environment:
+      - DATABASE_HOST=billing-db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${BILLING_DATABASE_USER}
+      - DATABASE_PASSWORD=${BILLING_DATABASE_PASSWORD}
+      - DATABASE_NAME=${BILLING_DATABASE_NAME}
+      - RABBITMQ_HOST=rabbit-queue
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.102
+    # restart: always
+
+  billing-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${BILLING_DATABASE_USER}
+      POSTGRES_PASSWORD: ${BILLING_DATABASE_PASSWORD}
+      POSTGRES_DB: ${BILLING_DATABASE_NAME}
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - billing-db-volume:/var/lib/postgresql/data
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.105
+    # restart: always
+
+  rabbit-queue:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.106
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # restart: always
+
+  api-gateway-app:
+    build: ./src/gateway
+    ports:
+      - '3000:3000'
+    depends_on:
+      rabbit-queue:
+        condition: service_healthy
+    environment:
+      - QUEUE_HOST=rabbit-queue
+      - INVENTORY_HOST=inventory-app
+      - BILLING_HOST=billing-app
+    volumes:
+      - api-gateway-volume:/var/log/api-gateway
+    networks:
+      my_custom_network:
+        ipv4_address: 192.168.56.101
+    # restart: always
+
+volumes:
+  inventory-db-volume:
+  billing-db-volume:
+  api-gateway-volume:
+
+networks:
+  my_custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.56.0/24

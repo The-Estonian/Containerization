@@ -14,25 +14,25 @@
 
 ## How to run
 
-Have Vagrant, Postman and VirtualBox installed
+Have Docker and Postman installed
 
 Git clone the project, cd inside it and run
 
 ```python
-vagrant up
+docker-compose up
 ```
 
-Wait 5-10m until Vagrant loads all 3 VMs, runs all the scrips to install all the dependencies, generates the databases etc.
+Wait 5-10m until docker loads all containers.
 
-Open Postman and query the Gateway database with beforementioned APIs as seen in the video.
+Open Postman and query the Gateway container with beforementioned APIs as seen in the video.
 
 ## Audit
 
-To audit the program, follow the steps [here](https://github.com/01-edu/public/tree/master/subjects/devops/crud-master/audit).
+To audit the program, follow the steps [here](https://github.com/01-edu/public/tree/master/subjects/devops/play-with-containers/audit).
 
 ## Project Videos
 
-Video1: https://youtu.be/bdiaenei95k
+Video: https://youtu.be/bdiaenei95k
 
 ## Contributing
 
